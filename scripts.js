@@ -126,7 +126,12 @@ const products = [
    */
   function formatPrice(price) {
     /* Útfæra */
+    const formatter = new Intl.NumberFormat('is-IS',{
+      style: 'currency',
+      currency: 'ISK',
+    });
 
+    return formatter.format(price);
   }
   
   /**
@@ -146,18 +151,24 @@ const products = [
   }
   
   /**
-   * Sníða upplýsingar um vöru og hugsanlega fjölda af henni til að birta notanda.
+   * Format information about a product and possibly a number of it to display to a user.
    * @example
    * ```text
    * HTML húfa — 5.000 kr.
    * CSS sokkar — 2x3.000 kr. samtals 6.000 kr.
    * ```
-   * @param {Product} product Vara til að birta
-   * @param {number | undefined} quantity Fjöldi af vöru, `undefined` ef ekki notað.
-   * @returns Streng sem inniheldur upplýsingar um vöru og hugsanlega fjölda af henni.
+   * @param {Product}  Product to display
+   * @param {number | undefined} quantity Number of product, `undefined` if not used.
+   * @returns A string containing information about a product and possibly its number.
    */
   function formatProduct(product, quantity = undefined) {
     /* Útfæra */
+    if(quantity == undefined){
+      return product.title + " - " + product.price;
+    }
+    else{
+      return product.title + " - " + quantity + "x" + formatPrice(product.price) + " " + "samtals " + formatPrice(product.price * quantity);
+    }
   }
   
   /**
@@ -206,7 +217,7 @@ const products = [
   
     const description = prompt('Lýsing:');
     if (!description) {
-      console.error('Description cannot be empty.');
+      console.error('Nope, the description cannot be empty.');
       return;
     }
   
