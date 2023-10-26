@@ -136,18 +136,37 @@ const products = [
   
   /**
    * Athuga hvort `num` sé heiltala á bilinu `[min, max]`.
-   * @param {number} num Tala til að athuga.
-   * @param {number} min Lágmarksgildi tölu (að henni meðtaldri), sjálfgefið `0`.
-   * @param {number} max Hámarksgildi tölu (að henni meðtaldri), sjálfgefið `Infinity`.
+   * @param {number} num Call to check.
+   * @param {number} min Minimum value of a number (inclusive), default `0`.
+   * @param {number} max Maximum value of a number (up to and including it), default `Infinity`.
    * @returns `true` ef `num` er heiltala á bilinu `[min, max]`, annars `false`.
    */
   function validateInteger(num, min = 0, max = Infinity) {
-    if(num < 0 || num > max || num % 1 != 0){
-        return false;
+    // ToDo: fix this damn function.
+    
+    if(!Number.isInteger(num)){
+      console.error('number is not integer')
+      return false;
+    }
+    else if(num < min){
+      console.error('number is lower than min')
+      return false;
+    }
+    else if(num > max){
+      console.error('number is higher than max')
+      return false;
     }
     else{
-        return true;
+      return true;
     }
+
+    /*
+    if (Number.isInteger(num) && num >= min && num <= max) {
+      return true;
+    } else {
+      return false;
+    }
+*/
   }
   
   /**
@@ -164,7 +183,7 @@ const products = [
   function formatProduct(product, quantity = undefined) {
     /* Útfæra */
     if(quantity == undefined){
-      return product.title + " - " + product.price;
+      return product.title + " - " + formatPrice(product.price);
     }
     else{
       return product.title + " - " + quantity + "x" + formatPrice(product.price) + " " + "samtals " + formatPrice(product.price * quantity);
@@ -172,7 +191,7 @@ const products = [
   }
   
   /**
-   * Skila streng sem inniheldur upplýsingar um körfu.
+   * Return a string containing cart information.
    * @example
    * ```text
    * HTML húfa — 5.000 kr.
@@ -183,7 +202,9 @@ const products = [
    * @returns Streng sem inniheldur upplýsingar um körfu.
    */
   function cartInfo(cart) {
-    /* Útfæra */
+    for (let i = 0; i < products.length; i++){
+      console.info(products[i]);
+  }
   }
   
   // --------------------------------------------------------
@@ -231,7 +252,7 @@ const products = [
     // and then a price that we can work with as a number.
     // Here we use 'Number.parseInt' to convert a string to an integer.
     // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/parseInt
-    const price = Number.parseInt(priceAsString, 10);
+    const price = Number.parseFloat(priceAsString);
   
     // Let's check if we get a legal integer greater than 0 using our helper function.
     if (!validateInteger(price, 1)) {
@@ -283,31 +304,71 @@ const products = [
   }
   
   /**
-   * Bæta vöru við körfu.
-   * Byrjar á að biðja um auðkenni vöru sem notandi vill bæta við körfu.
-   * Ef auðkenni er ekki heiltala, eru birt villa í console með skilaboðunum:
-   * „Auðkenni vöru er ekki löglegt, verður að vera heiltala stærri en 0.“
-   * Ef vara finnst ekki með gefnu auðkenni, eru birt villa í console með skilaboðunum:
-   * „Vara fannst ekki.“
-   * Því næst er beðið um fjölda af vöru sem notandi vill bæta við körfu. Ef fjöldi er ekki heiltala
-   * á bilinu `[1, 100>`, eru birtar villuskilaboð í console með skilaboðunum:
-   * „Fjöldi er ekki löglegur, lágmark 1 og hámark 99.“
-   * Ef vara og fjöldi eru lögleg gildi er vöru bætt við körfu. Ef vara er nú þegar í körfu er fjöldi
-   * uppfærður, annars er nýrri línu bætt við körfu.
+    * Add product to cart.
+    * Begins by asking for the ID of a product that a user wants to add to a cart.
+    * If ID is not an integer, an error is displayed in the console with the message:
+    * "Product ID is not legal, must be an integer greater than 0."
+    * If a product is not found with the given ID, an error is displayed in the console with the message:
+    * "Product not found."
+    * Next, the user is asked for the number of products that the user wants to add to the cart. If number is not an integer
+    * in the range `[1, 100>`, an error message is displayed in the console with the message:
+    * "Number is not legal, minimum 1 and maximum 99."
+    * If product and quantity are legal values, product is added to cart. If a product is already in the cart, there is a quantity
+    * updated, otherwise a new line is added to cart.
    *
    * @returns undefined
    */
   function addProductToCart() {
     /* Útfæra */
-  
-    /* Hér ætti að nota `validateInteger` hjálparfall til að staðfesta gögn frá notanda */
     
-    /* Til að athuga hvort vara sé til í `cart` þarf að nota `cart.lines.find` */
+    for (let i = 0; i < products.length; i++){
+      console.info(products[i].title + " - id: " + products[i].id)
+    }
+    const prodID = prompt('Product ID')
+    if(!prodID){
+      console.error('no ID? no service');
+      return;
+    }
+    const mount = prompt('Amount')
+    if(!mount){
+      console.error('illegal amount');
+      return;
+    }
+
+
+
+    const pracID = parseFloat(prodID);
+    /* Here `validateInteger` helper function should be used to validate data from user */
+    if(!validateInteger(pracID, 1, products.length)){
+      console.error('ID must be legal. ID = ' + prodID)
+      return;
+    }
+
+    const id = cart.lines.length + 1;
+    const Title = products[pracID].title;
+    const price = products[pracID].price;
+    const oldID = pracID;
+    const amount = mount;
+    /* To check if a product exists in the `cart` you need to use `cart.lines.find` */
+    const product = {
+      id,
+      Title,
+      price,
+      oldID,
+      amount,
+    };
+
+    //if(cart.lines.find){
+      
+   // }
+   // else{
+      cart.lines.push(product);
+   // }
   }
   
   /**
-   * Birta upplýsingar um körfu í console. Ef ekkert er í körfu er „Karfan er tóm.“ birt, annars
-   * birtum við upplýsingar um vörur í körfu og heildarverð.
+   * Display cart information in console. If there is nothing in the cart, "The cart is empty." is displayed, otherwise
+   * we publish information about products in the basket and the total price.
    *
    * @example
    * ```text
@@ -319,6 +380,9 @@ const products = [
    */
   function showCart() {
     /* Útfæra */
+    for (let i = 0; i < cart.lines.length; i++){
+      console.info(formatProduct(cart.lines[i], cart.lines[i].quantity));
+  }
   }
   
   /**
