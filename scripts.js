@@ -344,10 +344,12 @@ const products = [
       return;
     }
 
+  
+
     const id = cart.lines.length + 1;
-    const Title = products[pracID].title;
-    const price = products[pracID].price;
-    const oldID = pracID;
+    const Title = products[prodID].title;
+    const price = products[prodID].price;
+    const oldID = prodID;
     const amount = mount;
     /* To check if a product exists in the `cart` you need to use `cart.lines.find` */
     const product = {
@@ -362,6 +364,7 @@ const products = [
       
    // }
    // else{
+      console.log(product);
       cart.lines.push(product);
    // }
   }
