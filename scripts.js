@@ -182,11 +182,11 @@ const products = [
    */
   function formatProduct(product, quantity = undefined) {
     /* Útfæra */
-    if(quantity == undefined){
+    if(quantity == undefined || quantity == 1){
       return product.title + " - " + formatPrice(product.price);
     }
     else{
-      return product.title + " - " + quantity + "x" + formatPrice(product.price) + " " + "samtals " + formatPrice(product.price * quantity);
+      return product.title + " - " + quantity + "x" + formatPrice(product.price) + " samtals " + formatPrice(product.price * quantity);
     }
   }
   
@@ -235,7 +235,7 @@ const products = [
       console.error('Title cannot be empty.');
       return;
     }
-  
+
     const description = prompt('Lýsing:');
     if (!description) {
       console.error('Nope, the description cannot be empty.');
@@ -298,8 +298,12 @@ const products = [
   function showProducts() {
     /* make it up */
     /* The 'formatPrice' helper function should be used here */
-    for (let i = 0; i < products.length; i++){
+    /* for (let i = 0; i < products.length; i++){
         console.info(products[i]);
+    }*/
+    let output = '';
+    for (i = 0; i < products.length; i++){
+      console.log('#' + products[i].id + '  '+ products[i].title + ' - ' + products[i].description + ' - ' + formatPrice(products[i].price));
     }
   }
   
@@ -336,37 +340,48 @@ const products = [
     }
 
 
-
+    const emount = parseInt(mount);
     const pracID = parseFloat(prodID);
     /* Here `validateInteger` helper function should be used to validate data from user */
     if(!validateInteger(pracID, 1, products.length)){
-      console.error('ID must be legal. ID = ' + prodID)
+      console.error('ID must be legal.')
       return;
     }
 
   
 
     const id = cart.lines.length + 1;
-    const Title = products[prodID].title;
-    const price = products[prodID].price;
-    const oldID = prodID;
-    const amount = mount;
+    const title = products[pracID - 1].title;
+    const price = products[pracID - 1].price;
+    const oldID = pracID;
+    const amount = 0 + emount;
     /* To check if a product exists in the `cart` you need to use `cart.lines.find` */
-    const product = {
-      id,
-      Title,
-      price,
-      oldID,
-      amount,
-    };
 
-    //if(cart.lines.find){
+
+    const line = cart.lines.find((oldID) == pracID);
+
+    if(line){
       
-   // }
-   // else{
-      console.log(product);
+      for(let i = 0; i < cart.lines.length; i++){
+        if (cart.lines[i].oldID == pracID){
+          cart.lines[i].amount += emount;
+          break;
+        }
+      }
+      console.log('successfully added extra');
+    }
+    else{
+      const product = {
+        id,
+        title,
+        price,
+        oldID,
+        amount,
+      };
       cart.lines.push(product);
-   // }
+
+      console.log('following item has been added to the cart: ' + formatProduct(product,product.amount))
+    }
   }
   
   /**
@@ -384,17 +399,17 @@ const products = [
   function showCart() {
     /* Útfæra */
     for (let i = 0; i < cart.lines.length; i++){
-      console.info(formatProduct(cart.lines[i], cart.lines[i].quantity));
+      console.info(formatProduct(cart.lines[i], cart.lines[i].amount));
   }
   }
   
   /**
-   * Klárar kaup og birtir kvittun í console.
-   * Ef ekkert er í körfu eru birt skilboð í console:
-   * „Karfan er tóm.“
-   * Annars er notandi beðinn um nafn og heimilisfang, ef annaðhvort er tómt eru birt villuskilaboð í
-   * console og hætt í falli.
-   * Ef allt er í lagi er kvittun birt í console með upplýsingum um pöntun og heildarverð.
+   * Completes a purchase and displays a receipt in the console.
+   * If there is nothing in the basket, messages are displayed in the console:
+   * "The basket is empty."
+   * Otherwise, the user is asked for name and address, if either is empty an error message is displayed
+   * console and quit in case.
+   * If everything is OK, a receipt is displayed in the console with information about the order and the total price.
    * @example
    * ```text
    * Pöntun móttekin <nafn>.
@@ -408,4 +423,27 @@ const products = [
    */
   function checkout() {
     /* Útfæra */
+    if(cart.lines == ""){
+      console.error('The cart is empty')
+      return;
+    }
+
+    const name = prompt('Your name')
+    if(!name){
+      console.error('You gotta tell us your name.');
+      return;
+    }
+    const address = prompt('Delivery adress')
+    if(!address){
+      console.error('where do you expect to send us this package without an adress?? try again.');
+      return;
+    }
+
+    console.log(`purchase successful ${name}`)
+    console.log(`the items have been sent to ${address}\n`)
+
+    for(let i = 0; i < cart.lines.length; i++){
+      console.log(formatProduct(cart.lines[i], cart.lines[i].amount));
+    }
+    return;
   }
