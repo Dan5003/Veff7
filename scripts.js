@@ -357,10 +357,9 @@ const products = [
     const amount = 0 + emount;
     /* To check if a product exists in the `cart` you need to use `cart.lines.find` */
 
+    const yippee = cart.lines.find((l) => l.oldID === pracID);
 
-    const line = cart.lines.find((oldID) == pracID);
-
-    if(line){
+    if(yippee){
       
       for(let i = 0; i < cart.lines.length; i++){
         if (cart.lines[i].oldID == pracID){
@@ -423,7 +422,7 @@ const products = [
    */
   function checkout() {
     /* Útfæra */
-    if(cart.lines == ""){
+    if(cart.lines.length === 0){
       console.error('The cart is empty')
       return;
     }
@@ -433,17 +432,26 @@ const products = [
       console.error('You gotta tell us your name.');
       return;
     }
+
+    cart.name = name;
     const address = prompt('Delivery adress')
     if(!address){
       console.error('where do you expect to send us this package without an adress?? try again.');
       return;
     }
+    cart.address = address;
 
-    console.log(`purchase successful ${name}`)
-    console.log(`the items have been sent to ${address}\n`)
-
+    console.log(`purchase successful ${name}`);
+    console.log(`the items have been sent to ${address}\n`);
+    console.log(``);
     for(let i = 0; i < cart.lines.length; i++){
       console.log(formatProduct(cart.lines[i], cart.lines[i].amount));
     }
+    total = 0;
+    for(let i = 0; i < cart.lines.length; i++){
+      total += cart.lines[i].price * cart.lines[i].amount;
+    }
+
+    console.log(`Total: ${formatPrice(total)}`)
     return;
   }
